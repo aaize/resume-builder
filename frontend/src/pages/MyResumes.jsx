@@ -5,13 +5,16 @@ export default function MyResumes() {
   const [resumes, setResumes] = useState([]);
 
   const fetchResumes = async () => {
-    try {
-      const res = await API.get("/resumes");
-      setResumes(res.data);
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  try {
+    const res = await API.get("/resumes");
+
+    console.log("RESUMES:", res.data);
+
+    setResumes(res.data);
+  } catch (err) {
+    console.log("ERROR:", err.response?.data);
+  }
+};
 
   const deleteResume = async (id) => {
     try {

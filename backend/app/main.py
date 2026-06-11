@@ -115,3 +115,32 @@ def create_resume(
         "message": "Resume created",
         "resume_id": new_resume.id
     }
+@app.get("/resumes")
+def get_resumes(
+    current_user: int = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    resumes = db.query(models.Resume).filter(
+        models.Resume.user_id == current_user
+    ).all()
+
+    return resumes
+
+@app.delete("/resume/{resume_id}")
+def delete_resume(
+    resume_id: int,
+    current_user: int = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    resume = db.query(models.Resume).filter(
+        models.Resume.id == resume_id,
+        models.Resume.user_id == current_user
+    ).first()
+
+    if not resume:
+        return {"error": "Resume not found"}
+
+    db.delete(resume)
+    db.commit()
+
+    return {"message": "Resume deleted successfully"}
