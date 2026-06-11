@@ -104,3 +104,14 @@ def create_resume(
         "message": "Resume created",
         "resume_id": new_resume.id
     }
+@app.get("/resumes")
+def get_resumes(
+    current_user: int = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+
+    resumes = db.query(models.Resume).filter(
+        models.Resume.user_id == current_user
+    ).all()
+
+    return resumes
