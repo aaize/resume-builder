@@ -1,9 +1,12 @@
 import { useState } from "react";
 import api from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -13,22 +16,19 @@ function Login() {
       formData.append("username", email);
       formData.append("password", password);
 
-      const response = await api.post(
-        "/login",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        }
-      );
+      const response = await api.post("/login", formData, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      });
 
-      localStorage.setItem(
-        "token",
-        response.data.access_token
-      );
+      // store JWT
+      localStorage.setItem("token", response.data.access_token);
 
       alert("Login Successful!");
+
+      // 🔥 redirect after login
+      navigate("/dashboard");
     } catch (error) {
       console.error(error);
       alert("Login Failed");
@@ -56,9 +56,7 @@ function Login() {
 
         <br /><br />
 
-        <button type="submit">
-          Login
-        </button>
+        <button type="submit">Login</button>
       </form>
     </div>
   );
