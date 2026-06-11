@@ -1,12 +1,23 @@
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from .database import engine, SessionLocal
 from . import models, schemas, auth
-
+from fastapi.middleware.cors import CORSMiddleware
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def get_db():
@@ -104,14 +115,3 @@ def create_resume(
         "message": "Resume created",
         "resume_id": new_resume.id
     }
-@app.get("/resumes")
-def get_resumes(
-    current_user: int = Depends(auth.get_current_user),
-    db: Session = Depends(get_db)
-):
-
-    resumes = db.query(models.Resume).filter(
-        models.Resume.user_id == current_user
-    ).all()
-
-    return resumes
